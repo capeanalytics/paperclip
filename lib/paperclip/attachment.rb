@@ -55,7 +55,8 @@ module Paperclip
     #                  a special case that indicates all styles should be processed)
     # +default_url+ - a URL for the missing image
     # +default_style+ - the style to use when an argument is not specified e.g. #url, #path
-    # +storage+ - the storage mechanism. Defaults to :filesystem
+    # +storage+ - the storage mechanism. Defaults to :filesystem. When using a Proc it provides a single 
+    #                  parameter which is the attachment itself
     # +use_timestamp+ - whether to append an anti-caching timestamp to image URLs. Defaults to true
     # +whiny+, +whiny_thumbnails+ - whether to raise when thumbnailing fails
     # +use_default_time_zone+ - related to +use_timestamp+. Defaults to true
@@ -422,7 +423,9 @@ module Paperclip
     end
 
     def initialize_storage #:nodoc:
-      storage_class_name = @options[:storage].to_s.downcase.camelize
+      storage_class = @options[:storage]
+      storage_class = storage_class.call(self) if storage_class.is_a?(Proc)
+      storage_class_name = storage_class.to_s.downcase.camelize
       begin
         storage_module = Paperclip::Storage.const_get(storage_class_name)
       rescue NameError
