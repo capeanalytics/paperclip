@@ -758,6 +758,12 @@ describe Paperclip::Attachment do
     assert @dummy.avatar.is_a?(Paperclip::Storage::Filesystem)
   end
 
+  it "supports passing a proc to define storage" do
+    rebuild_model storage: Proc.new{|a| :s3}
+    @dummy = Dummy.new
+    assert @dummy.avatar.is_a?(Paperclip::Storage::S3)
+  end
+
   it "includes the filesystem module even if capitalization is wrong" do
     rebuild_model storage: :FileSystem
     @dummy = Dummy.new
