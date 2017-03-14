@@ -1514,6 +1514,13 @@ describe Paperclip::Attachment do
     end
   end
 
+  context 'load from storage' do
+    it 'works with file storage'
+    it 'works with s3'
+    it 'resets instance file name to nil if failure'
+    it 'sets instance filename if success'
+  end
+
   context "An attached file" do
     before do
       rebuild_model

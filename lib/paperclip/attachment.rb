@@ -108,14 +108,40 @@ module Paperclip
         clear(*only_process)
 
         if @file.nil?
+          p 'file nil'
           nil
         else
+          p 'assigning attributes'
           assign_attributes
           post_process_file
           reset_file_if_original_reprocessed
         end
       else
         nil
+      end
+    end
+
+    def load_from_storage(file_type)
+      instance_write(:file_name, "bogus.#{file_type}")
+      begin
+        @file = Paperclip.io_adapters.for(self,
+                                        @options[:adapter_options])
+      rescue Errno::ENOENT
+        instance_write(:file_name, nil)
+        return nil
+      end
+
+      ensure_required_accessors!
+      ensure_required_validations!
+
+      if @file.assignment?
+        if @file.nil?
+          instance_write(:file_name, nil)
+          nil
+        else
+          assign_attributes
+          @queued_for_write.delete(:original)
+        end
       end
     end
 
