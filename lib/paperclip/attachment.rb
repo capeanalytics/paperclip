@@ -108,10 +108,8 @@ module Paperclip
         clear(*only_process)
 
         if @file.nil?
-          p 'file nil'
           nil
         else
-          p 'assigning attributes'
           assign_attributes
           post_process_file
           reset_file_if_original_reprocessed
